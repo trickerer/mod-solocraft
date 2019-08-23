@@ -1,17 +1,34 @@
-# mod-solocraft
+# ![logo](https://raw.githubusercontent.com/azerothcore/azerothcore.github.io/master/images/logo-github.png) AzerothCore
+## mod-solocraft
+### This is a module for [AzerothCore](http://www.azerothcore.org)
+- Latest build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-solocraft.svg?branch=master)](https://travis-ci.org/azerothcore/mod-solocraft)
 
-#### A module for AzerothCore by [StygianTheBest](https://youtu.be/fERCwTTOU3M?t=126) ####
-------------------------------------------------------------------------------------------------------------------
+
+## Description
+
 - Adjusts player stats for raids based on the # of players in the group
 - Config: Difficulty settings for each instance type
 
+## How to use ingame
 
-### To-Do ###
-------------------------------------------------------------------------------------------------------------------
-- Verify player pets are buffed accordingly
-- Dispel target regeneration
-- (This is not needed in 3.3.5a) Provide unlimited http://www.wowhead.com/item=17333/aqual-quintessence
+1. Enable in conf
+2. Enter Dungeon or Raid
 
+## Requirements
+
+- AzerothCore v1.0.1+
+
+
+## Installation
+
+```
+1) Simply place the module under the `modules` directory of your AzerothCore source. 
+2) Re-run cmake and launch a clean build of AzerothCore.
+```
+
+## Edit module configuration (optional)
+
+If you need to change the module configuration, go to your server configuration folder (where your `worldserver` or `worldserver.exe` is), copy `emblem_transfer.conf.dist` to `emblem_transfer.conf` and edit that new file.
 
 ### Data ###
 ------------------------------------------------------------------------------------------------------------------
@@ -20,21 +37,12 @@
 - Config: Yes
 - SQL: No
 
-
-### Version ###
-------------------------------------------------------------------------------------------------------------------
-- v2019.04.12 - Commented out unnecessary code so now the values from config file are parsed correctly
-- v2017.09.04 - Add config options for difficulty levels
-- v2017.09.05 - Update strings, Add module announce
-
-
 ### Credits ###
 ------------------------------------------------------------------------------------------------------------------
+- [DavidMacalaster](https://github.com/DavidMacalaster/Solocraft)
 - [Blizzard Entertainment](http://blizzard.com)
 - [TrinityCore](https://github.com/TrinityCore/TrinityCore/blob/3.3.5/THANKS)
 - [SunwellCore](http://www.azerothcore.org/pages/sunwell.pl/)
-- [AzerothCore](https://github.com/AzerothCore/azerothcore-wotlk/graphs/contributors)
-- [AzerothCore Discord](https://discord.gg/gkt4y2x)
 - [EMUDevs](https://youtube.com/user/EmuDevs)
 - [AC-Web](http://ac-web.org/)
 - [ModCraft.io](http://modcraft.io/)
@@ -42,11 +50,4 @@
 - [OregonCore](https://wiki.oregon-core.net/)
 - [Wowhead.com](http://wowhead.com)
 - [AoWoW](https://wotlk.evowow.com/)
-
-
-### License ###
-------------------------------------------------------------------------------------------------------------------
-- This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).
-
-# Original script:
-https://github.com/DavidMacalaster/Solocraft
+- AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/PaqQRkd)
