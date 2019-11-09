@@ -1,47 +1,4 @@
-/*
-# SoloCraft #
-### Description ###
-------------------------------------------------------------------------------------------------------------------
-- Adjusts player stats for raids based on the # of players in the group
-- Config: Difficulty settings for each instance type
-## To-Do ###
-------------------------------------------------------------------------------------------------------------------
-- Verify player pets are buffed accordingly
-- Dispel target regeneration
-- (This is not needed in 3.3.5a) Provide unlimited http://www.wowhead.com/item=17333/aqual-quintessence
-## Data ###
-------------------------------------------------------------------------------------------------------------------
-- Type: Server/Player
-- Script: Solocraft
-- Config: Yes
-- SQL: No
-### Version ###
-------------------------------------------------------------------------------------------------------------------
-- v2019.04.12 - Commented out unnecessary code so now the values from config file are parsed correctly （Lines 139-142）
-- v2017.09.04 - Add config options for difficulty levels
-- v2017.09.05 - Release - Update strings, Add module announce
-### Credits ###
-------------------------------------------------------------------------------------------------------------------
-#### A module for AzerothCore by StygianTheBest ([stygianthebest.github.io](http://stygianthebest.github.io)) ####
-###### Additional Credits include:
-- [Blizzard Entertainment](http://blizzard.com)
-- [TrinityCore](https://github.com/TrinityCore/TrinityCore/blob/3.3.5/THANKS)
-- [SunwellCore](http://www.azerothcore.org/pages/sunwell.pl/)
-- [AzerothCore](https://github.com/AzerothCore/azerothcore-wotlk/graphs/contributors)
-- [AzerothCore Discord](https://discord.gg/gkt4y2x)
-- [EMUDevs](https://youtube.com/user/EmuDevs)
-- [AC-Web](http://ac-web.org/)
-- [ModCraft.io](http://modcraft.io/)
-- [OwnedCore](http://ownedcore.com/)
-- [OregonCore](https://wiki.oregon-core.net/)
-- [Wowhead.com](http://wowhead.com)
-- [AoWoW](https://wotlk.evowow.com/)
-### License ###
-------------------------------------------------------------------------------------------------------------------
-- This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).
-*/
-
-#include <map>
+﻿#include <map>
 #include "Config.h"
 #include "ScriptMgr.h"
 #include "Unit.h"
@@ -68,10 +25,6 @@ public:
         if (!reload) {
             std::string conf_path = _CONF_DIR;
             std::string cfg_file = conf_path + "/Solocraft.conf";
-
-#ifdef WIN32
-            cfg_file = "Solocraft.conf";
-#endif
 
             std::string cfg_def_file = cfg_file + ".dist";
             sConfigMgr->LoadMore(cfg_def_file.c_str());
@@ -118,7 +71,7 @@ class solocraft_player_instance_handler : public PlayerScript {
 public:
 
     solocraft_player_instance_handler() : PlayerScript("solocraft_player_instance_handler") {
-        sLog->outString("scripts.solocraft.player.instance", "[Solocraft] solocraft_player_instance_handler Loaded");
+     //   sLog->outString("scripts.solocraft.player.instance", "[Solocraft] solocraft_player_instance_handler Loaded");
     }
 
     void OnMapChanged(Player *player) override {
@@ -184,9 +137,9 @@ private:
             // InstanceScript *instanceScript = instanceMap->GetInstanceScript();
 
             // Announce to player
-            std::ostringstream ss;
-            ss << "|cffFF0000[SoloCraft] |cffFF8000" << player->GetName() << " entered %s - # of Players: %d - Difficulty Offset: %d.";
-            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), map->GetMapName(), numInGroup, difficulty);
+           // std::ostringstream ss;
+           // ss << "|cffFF0000[SoloCraft] |cffFF8000" << player->GetName() << " entered %s - # of Players: %d - Difficulty Offset: %d.";
+           // ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), map->GetMapName(), numInGroup, difficulty);
 
             // Adjust player stats
             _unitDifficulty[player->GetGUID()] = difficulty;
