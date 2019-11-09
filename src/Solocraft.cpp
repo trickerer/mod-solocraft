@@ -128,7 +128,7 @@ private:
     }
 
     // Apply the player buffs
-    void ApplyBuffs(Player* player, Map* map, int difficulty, int numInGroup)
+    void ApplyBuffs(Player* player, Map* map, int difficulty, int /*numInGroup*/)
     {
         ClearBuffs(player, map);
 
