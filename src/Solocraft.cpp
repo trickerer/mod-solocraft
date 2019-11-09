@@ -7,6 +7,7 @@
 #include "Map.h"
 #include "Group.h"
 #include "InstanceScript.h"
+#include "Chat.h"
 
 bool SoloCraftEnable = 1;
 bool SoloCraftAnnounceModule = 1;
