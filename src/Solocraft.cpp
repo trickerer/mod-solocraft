@@ -97,7 +97,7 @@ private:
 */
 
     // Set the instance difficulty
-    int CalculateDifficulty(Map *map, Player *player) {
+    int CalculateDifficulty(Map* map, Player* /*player*/) {
         int difficulty = 1;
         if (map) {
             if (map->Is25ManRaid()) {
@@ -117,7 +117,7 @@ private:
     }
 
     // Get the groups size
-    int GetNumInGroup(Player *player) {
+    int GetNumInGroup(Player* player) {
         int numInGroup = 1;
         Group *group = player->GetGroup();
         if (group) {
@@ -128,7 +128,7 @@ private:
     }
 
     // Apply the player buffs
-    void ApplyBuffs(Player *player, Map *map, int difficulty, int numInGroup)
+    void ApplyBuffs(Player* player, Map* map, int difficulty, int numInGroup)
     {
         ClearBuffs(player, map);
 
@@ -160,7 +160,7 @@ private:
         }
     }
 
-    void ClearBuffs(Player *player, Map *map)
+    void ClearBuffs(Player* player, Map* map)
     {
         std::map<uint32, int>::iterator unitDifficultyIterator = _unitDifficulty.find(player->GetGUID());
         if (unitDifficultyIterator != _unitDifficulty.end())
