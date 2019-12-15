@@ -71,10 +71,8 @@ class solocraft_player_instance_handler : public PlayerScript {
 
 public:
 
-    solocraft_player_instance_handler() : PlayerScript("solocraft_player_instance_handler") {
-     //   sLog->outString("scripts.solocraft.player.instance", "[Solocraft] solocraft_player_instance_handler Loaded");
-    }
-
+    solocraft_player_instance_handler() : PlayerScript("solocraft_player_instance_handler") {}
+    
     void OnMapChanged(Player *player) override {
         if (sConfigMgr->GetBoolDefault("Solocraft.Enable", true))
         {
@@ -138,9 +136,9 @@ private:
             // InstanceScript *instanceScript = instanceMap->GetInstanceScript();
 
             // Announce to player
-           // std::ostringstream ss;
-           // ss << "|cffFF0000[SoloCraft] |cffFF8000" << player->GetName() << " entered %s - # of Players: %d - Difficulty Offset: %d.";
-           // ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), map->GetMapName(), numInGroup, difficulty);
+            std::ostringstream ss;
+            ss << "|cffFF0000[SoloCraft] |cffFF8000" << player->GetName() << " entered %s - # of Players: %d - Difficulty Offset: %d.";
+            ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), map->GetMapName(), numInGroup, difficulty);
 
             // Adjust player stats
             _unitDifficulty[player->GetGUID()] = difficulty;
