@@ -505,7 +505,6 @@ private:
     // Set the instance difficulty
     int CalculateDifficulty(Map* map, Player* /*player*/) {
         float difficulty = 0.0;//changed from 1.0
-		int maxLevel = 1;
 		
         if (map) {
             if (map->Is25ManRaid()) {
