@@ -1141,7 +1141,7 @@ private:
 
         }
 		else			
-			ClearBuffs(player, map, numInGroup); //Check to revert player back to normal - Moving this here fixed logout and login while in instance buff and debuff issues
+			ClearBuffs(player, map); //Check to revert player back to normal - Moving this here fixed logout and login while in instance buff and debuff issues
 	}
 	
     // Get the current group members GUIDS and return the total sum of the difficulty offset by all group members currently in the dungeon
@@ -1173,7 +1173,7 @@ private:
         return GroupDifficulty;
     }
 	
-    void ClearBuffs(Player* player, Map* map, int numInGroup)
+    void ClearBuffs(Player* player, Map* map)
     {
 	
 		//Database query to get offset from the last instance player exited
