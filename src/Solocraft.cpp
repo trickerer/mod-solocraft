@@ -128,8 +128,6 @@ private:
     // Apply the player buffs
     void ApplyBuffs(Player* player, Map* map, int difficulty, int /*numInGroup*/)
     {
-        ClearBuffs(player, map);
-
         if (difficulty > 1)
         {
             // InstanceMap *instanceMap = map->ToInstanceMap();
@@ -156,6 +154,8 @@ private:
                 player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
             }
         }
+		else
+			ClearBuffs(player, map);
     }
 
     void ClearBuffs(Player* player, Map* map)
