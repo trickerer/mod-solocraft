@@ -5,7 +5,7 @@
 
 ## Description
 
-- Adjusts player stats for raids based on the # of players in the group - This now works.
+- Adjusts player stats for raids based on the # of players in the group
 - Configurable debuff for groups trying to overload the difficulty modifier for an instance
 - Adjustable stats modifier in config
 - Config: Difficulty settings for each instance and type
