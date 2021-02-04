@@ -28,7 +28,7 @@
 
 ```
 1) Simply place the module under the `modules` directory of your AzerothCore source. 
-2) Import the SQL to the right Database (world)
+2) Import the SQL to the right Database (character)
 3) Re-run cmake and launch a clean build of AzerothCore.
 ```
 
