@@ -308,6 +308,16 @@ public:
             }
         }
     }
+    void OnLogout(Player* player)
+    {
+		//Database query to see if an entry is still there
+		QueryResult result = CharacterDatabase.PQuery("SELECT `GUID` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID());
+		if (result)
+		{
+			//Remove database entry as the player has logged out
+			CharacterDatabase.PExecute("DELETE FROM custom_solocraft_character_stats WHERE GUID = %u", player->GetGUID());
+		}
+    }	
 };
 
 class solocraft_player_instance_handler : public PlayerScript {
@@ -406,14 +416,17 @@ private:
 
     // Apply the player buffs
     void ApplyBuffs(Player* player, Map* map, float difficulty, int dunLevel, int numInGroup)
-    {
-		  int SpellPowerBonus = 0;
-
-		//Check whether to buff the player or check to debuff back to normal
-      if (difficulty != 0)
-      {	
-		  	std::ostringstream ss;	
+    {	
+	    //Check whether to buff the player or check to debuff back to normal
+	    if (difficulty != 0)
+	    {	
+			std::ostringstream ss;
 			
+
+			int SpellPowerBonus = 0;
+			// int SpellPowerBonusDB = 0;
+			
+		
 			if (player->getLevel() <= dunLevel + SolocraftLevelDiff) //If a player is too high level for dungeon don't buff but if in a group will count towards the group offset balancing.
 			{
 					
@@ -438,10 +451,18 @@ private:
 					difficulty = roundf(difficulty * 100) / 100; //Float variables suck - two decimal rounding
 				
 				}
-
+				
+				//Check Database for a current dungeon entry
+				QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize`, `SpellPower`, `Stats` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID());
+		
 				//Modify Player Stats
 				for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i) //STATS defined/enum in SharedDefines.h
 				{
+					//Check for Dungeon to Dungeon Transfer and remove old buff
+					if (result) 
+					{	
+						player->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, (*result)[1].GetFloat() * (*result)[4].GetFloat(), false);
+					}
 					// Buff the player
 					player->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, difficulty * SoloCraftStatsMult, true); //Unitmods enum UNIT_MOD_STAT_START defined in Unit.h line 391
 								
@@ -455,9 +476,19 @@ private:
 				{
 					// Buff the player's mana
 					player->SetPower(POWER_MANA, player->GetMaxPower(POWER_MANA));
+					
+					
+					//Check for Dungeon to Dungeon Transfer and remove old Spellpower buff					
+					if (result) 
+					{					
+						// remove spellpower bonus
+						player->ApplySpellPowerBonus((*result)[3].GetUInt32() * (*result)[4].GetFloat(),false);	
+					}					
+					
 					//Buff Spellpower
 					if (difficulty > 0) //Debuffed characters do not get spellpower
 					{
+
 						SpellPowerBonus = static_cast<int>((player->getLevel() * SoloCraftSpellMult) * difficulty);//Yes, I pulled this calc out of my butt.
 						player->ApplySpellPowerBonus(SpellPowerBonus,true);
 						//sLog->outError("%u: spellpower Bonus applied: %i", player->GetGUID(), SpellPowerBonus);
@@ -480,17 +511,21 @@ private:
 				
 				// Save Player Dungeon Offsets to Database
 				CharacterDatabase.PExecute("REPLACE INTO custom_solocraft_character_stats (GUID, Difficulty, GroupSize, SpellPower, Stats) VALUES (%u, %f, %u, %i, %f)", player->GetGUID(), difficulty, numInGroup, SpellPowerBonus, SoloCraftStatsMult);
+			
 			}
 			else
 			{
 				// Announce to player - Over Max Level Threshold
 				ss << "|cffFF0000[SoloCraft] |cffFF8000" << player->GetName() << " entered %s  - |cffFF0000You have not been buffed. |cffFF8000 Your level is higher than the max level (%i) threshold for this dungeon.";
 				ChatHandler(player->GetSession()).PSendSysMessage(ss.str().c_str(), map->GetMapName(), dunLevel + SolocraftLevelDiff);	
+				ClearBuffs(player, map); //Check to revert player back to normal
 			}
-
-    }
-		else			
+			
+		}
+		else
+		{
 			ClearBuffs(player, map); //Check to revert player back to normal - Moving this here fixed logout and login while in instance buff and debuff issues
+		}
 	}
 	
     // Get the current group members GUIDS and return the total sum of the difficulty offset by all group members currently in the dungeon
