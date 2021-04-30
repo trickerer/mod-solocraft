@@ -311,11 +311,11 @@ public:
     void OnLogout(Player* player)
     {
 		//Database query to see if an entry is still there
-		QueryResult result = CharacterDatabase.PQuery("SELECT `GUID` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID());
+		QueryResult result = CharacterDatabase.PQuery("SELECT `GUID` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID().GetCounter());
 		if (result)
 		{
 			//Remove database entry as the player has logged out
-			CharacterDatabase.PExecute("DELETE FROM custom_solocraft_character_stats WHERE GUID = %u", player->GetGUID());
+			CharacterDatabase.PExecute("DELETE FROM custom_solocraft_character_stats WHERE GUID = %u", player->GetGUID().GetCounter());
 		}
     }	
 };
@@ -453,7 +453,7 @@ private:
 				}
 				
 				//Check Database for a current dungeon entry
-				QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize`, `SpellPower`, `Stats` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID());
+				QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize`, `SpellPower`, `Stats` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID().GetCounter());
 		
 				//Modify Player Stats
 				for (int32 i = STAT_STRENGTH; i < MAX_STATS; ++i) //STATS defined/enum in SharedDefines.h
@@ -510,7 +510,7 @@ private:
 				}
 				
 				// Save Player Dungeon Offsets to Database
-				CharacterDatabase.PExecute("REPLACE INTO custom_solocraft_character_stats (GUID, Difficulty, GroupSize, SpellPower, Stats) VALUES (%u, %f, %u, %i, %f)", player->GetGUID(), difficulty, numInGroup, SpellPowerBonus, SoloCraftStatsMult);
+				CharacterDatabase.PExecute("REPLACE INTO custom_solocraft_character_stats (GUID, Difficulty, GroupSize, SpellPower, Stats) VALUES (%u, %f, %u, %i, %f)", player->GetGUID().GetCounter(), difficulty, numInGroup, SpellPowerBonus, SoloCraftStatsMult);
 			
 			}
 			else
@@ -541,7 +541,7 @@ private:
 				if (itr->guid != player->GetGUID()) 
 				{
 					//Database query to find difficulty for each group member that is currently in an instance
-					QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize` FROM `custom_solocraft_character_stats` WHERE GUID = %u", itr->guid);
+					QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize` FROM `custom_solocraft_character_stats` WHERE GUID = %u", itr->guid.GetCounter());
 					if (result) 
 					{
 						//Test for debuffs already give to other members - They cannot be used to determine the total offset because negative numbers will skew the total difficulty offset 
@@ -561,7 +561,7 @@ private:
     {
 	
 		//Database query to get offset from the last instance player exited
-		QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize`, `SpellPower`, `Stats` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID());
+		QueryResult result = CharacterDatabase.PQuery("SELECT `GUID`, `Difficulty`, `GroupSize`, `SpellPower`, `Stats` FROM `custom_solocraft_character_stats` WHERE GUID = %u", player->GetGUID().GetCounter());
 		if (result)
 		{
 			float difficulty = (*result)[1].GetFloat();
@@ -588,7 +588,7 @@ private:
             }			
 
 			//Remove database entry as the player is no longer in an instance
-			CharacterDatabase.PExecute("DELETE FROM custom_solocraft_character_stats WHERE GUID = %u", player->GetGUID());
+			CharacterDatabase.PExecute("DELETE FROM custom_solocraft_character_stats WHERE GUID = %u", player->GetGUID().GetCounter());
 		}
     }
 };
