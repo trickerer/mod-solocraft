@@ -21,7 +21,8 @@ Solocraft.Announce = 1
 
 
 ###################################################################################################
-#  Balancing - Groups (Overloading), Global Spellpower and Stats modifier, Global Class Balancing
+#  Balancing - Groups (Overloading), Global Spellpower and Stats modifier, Global Class Balancing, 
+#  and XP Gain Balancing
 ###################################################################################################
 
 # Enable Debuff of new party members who enter the dungeon to avoid overloading the dungeon? 
@@ -74,6 +75,26 @@ SoloCraft.ROGUE = 100
 SoloCraft.SHAMAN = 100
 SoloCraft.WARLOCK = 100
 SoloCraft.WARRIOR = 100
+
+
+# XP Gain 
+# This settings will Enable/Disable XP gained while in the current dungeon
+
+#Default: 1 (Enabled)
+#    	  0 (Disable)
+
+Solocraft.XP.Enabled = 1
+
+
+# XP Balancing (XP Gain must be Enabled)
+# This settings will decrease the XP gained based on the Difficulty setting of the dungeon
+# and how many players are in the group.
+
+#Default: 1 (Enabled)
+#    	  0 (Disable)
+
+Solocraft.XPBal.Enabled = 1
+
 
 ################################################################################################
 #Catch all Bucket - Difficulty Offset Defaults
