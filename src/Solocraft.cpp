@@ -642,6 +642,7 @@ private:
 				{
 					//Database query to find difficulty for each group member that is currently in an instance
 					QueryResult result = CharacterDatabase.Query("SELECT `GUID`, `Difficulty`, `GroupSize` FROM `custom_solocraft_character_stats` WHERE GUID = {}", itr->guid.GetCounter());
+
 					if (result)
 					{
 						//Test for debuffs already give to other members - They cannot be used to determine the total offset because negative numbers will skew the total difficulty offset 
@@ -665,6 +666,7 @@ private:
 		{
 			float difficulty = (*result)[1].Get<float>();
 			int SpellPowerBonus = (*result)[3].Get<uint32>();
+
 			float StatsMultPct = (*result)[4].Get<float>();
 			SoloCraftXPMod = 1.0;
 
