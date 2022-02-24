@@ -340,7 +340,7 @@ public:
 		}
     }
 
-	void OnGiveXP(Player* p, uint32& amount, Unit* /*victim*/) override
+	void OnGiveXP(Player* /*player*/, uint32& amount, Unit* /*victim*/) override
     {
         if (SolocraftXPBalEnabled) 
 		{
