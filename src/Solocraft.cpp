@@ -329,7 +329,7 @@ public:
             }
         }
     }
-    void OnLogout(Player* player)
+    void OnLogout(Player* player) override
     {
 		//Database query to see if an entry is still there
 		QueryResult result = CharacterDatabase.Query("SELECT `GUID` FROM `custom_solocraft_character_stats` WHERE GUID = {}", player->GetGUID().GetCounter());
