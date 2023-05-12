@@ -372,7 +372,7 @@ private:
 	std::map<uint32, float> _unitDifficulty;
 
     // Set the instance difficulty
-    int CalculateDifficulty(Map* map, Player* /*player*/) {
+    float CalculateDifficulty(Map* map, Player* /*player*/) {
         //float difficulty = 0.0;//changed from 1.0
 
         if (map) {
