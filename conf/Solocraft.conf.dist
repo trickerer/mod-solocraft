@@ -1,69 +1,68 @@
 [worldserver]
 ###################################################################################################
-#     ____    __                                         ____                           
-#    /\  _`\ /\ \__                  __                 /\  _`\                         
-#    \ \,\L\_\ \ ,_\  __  __     __ /\_\     __      ___\ \ \/\_\    ___   _ __    __   
-#     \/_\__ \\ \ \/ /\ \/\ \  /'_ `\/\ \  /'__`\  /' _ `\ \ \/_/_  / __`\/\`'__\/'__`\ 
-#       /\ \L\ \ \ \_\ \ \_\ \/\ \L\ \ \ \/\ \L\.\_/\ \/\ \ \ \L\ \/\ \L\ \ \ \//\  __/ 
-#       \ `\____\ \__\\/`____ \ \____ \ \_\ \__/.\_\ \_\ \_\ \____/\ \____/\ \_\\ \____\
-#        \/_____/\/__/ `/___/> \/___L\ \/_/\/__/\/_/\/_/\/_/\/___/  \/___/  \/_/ \/____/
-#                         /\___/ /\____/                                                
-#                         \/__/  \_/__/          http://stygianthebest.github.io                                         
-###################################################################################################
 #  SOLOCRAFT
-###################################################################################################
+#
+#    Solocraft.Enable
+#        Description: Enable the module?
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
+#
 
-# Enable the module? (1: true | 0: false)
 Solocraft.Enable = 1
 
-# Announce the module when the player logs in?
+#
+#    Solocraft.Announce
+#        Description: Announce the module when the player logs in?
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
+#
+
 Solocraft.Announce = 1
 
+#
+#    SoloCraft.Crit.Mult
+#        Description: Crit Bonus Multiplier
+#                     Spellcasters spellpower bonus multiplier to offset no spellpower received from stats
+#                     Formula: (multiplier * stats_mult / 10)
+#                     Example Player with default modifier and dungeon difficulty of 5
+#                     will receive a base Crit chance increase of 25%.
+#        Default:     0.5 - (Enabled)
+#                     0   - (Disabled)
+#
 
-###################################################################################################
-#  Balancing - Groups (Overloading), Global Spellpower and Stats modifier, Global Class Balancing, 
-#  and XP Gain Balancing
-###################################################################################################
+SoloCraft.Crit.Mult = 0.5
 
-# Enable Debuff of new party members who enter the dungeon to avoid overloading the dungeon? 
-# Overloading is when a group member already in the dungeon has the full offset/buff of the 
-# dungeon applied then they invite new group members who enter the dungeon and also receive an
-# offset which creates a huge imbalance. 
-# The debuff will make the new members weak until all members leave the instance/dungeon
-# instance/dungeon and re-enter which will then split the offset among all the group members.
+#
+#    SoloCraft.Spellpower.Mult
+#        Description: Spellpower Bonus Multiplier
+#                     Spellcasters spellpower bonus multiplier to offset no spellpower received from stats
+#                     Formula: (player->level * multiplier) * ((classBalance / 100) * stats_mult / 100)
+#                     Example Level 24 Mage with default modifier and dungeon difficulty of 5
+#                     will receive a base Spellpower increase of 300.
+#        Default:     2.5 - (Enabled)
+#                     0   - (Disabled)
+#
 
-# Default: 	1 (on)
-#			0 (off)
-SoloCraft.Debuff.Enable = 1
-
-
-# Spellpower Bonus Multiplier
-# Spellcasters spellpower bonus multiplier to offset no spellpower received from stats
-# Formula: (player->level * multiplier) * ((classBalance / 100) * difficulty)
-# Example Level 24 Mage with default modifier and  a dungeon difficulty of 5 will receive a base 
-# Spellpower increase of 300.
-
-# Default:	2.5
-#			0.0 (Disable)
 SoloCraft.Spellpower.Mult = 2.5
 
+#
+#    SoloCraft.Stats.Mult
+#        Description: Stats Percentage Bonus Multiplier
+#                     Forumla: player->Stats * (((classBalance / 100) * difficulty) * multiplier)
+#        Default:     100.0 - (Enabled)
+#                     0     - (Disabled)
 
-# Stats Percentage Bonus Multiplier
-# Forumla: player->Stats * (((classBalance / 100) * difficulty) * multiplier)
-
-# Default: 	100.0
-#			0.0	(Disable)
 SoloCraft.Stats.Mult = 100.0
 
-
-# Class Balancing Modifier
-# This settings will only allow the percentage specified of the difficulty for the specified class
-# Example Level 24 Mage with default modifier (2.5), a dungeon difficulty of 5, and a 80 percent class
-# balance modifier will receive a base Spellpower increase of 240.
-# Note: 0 will completely disable the class from receiving difficulty modifiers from any dungeon
-
-#Default: 100 (Full Dungeon Difficulty Modifer will be Applied)
-#    	  0 (Disable) - 100
+#
+#    Solocraft.Announce
+#        Description: Class Balancing Modifier
+#                     This settings will only allow the percentage specified of the difficulty for the specified class
+#                     Example Level 24 Mage with default modifier (2.5), a dungeon difficulty of 5, and a 80 percent class
+#                     balance modifier will receive a base Spellpower increase of 240.
+#                     Note: 0 will completely disable the class from receiving difficulty modifiers from any dungeon
+#        Default:     100 - (Enabled)
+#                     0   - (Disabled)
 
 SoloCraft.DEATH_KNIGHT = 100
 SoloCraft.DRUID = 100
@@ -76,36 +75,56 @@ SoloCraft.SHAMAN = 100
 SoloCraft.WARLOCK = 100
 SoloCraft.WARRIOR = 100
 
-
-# XP Gain 
-# This settings will Enable/Disable XP gained while in the current dungeon
-
-#Default: 1 (Enabled)
-#    	  0 (Disable)
+#
+#    Solocraft.XP.Enabled
+#        Description: XP Gain 
+#                     This settings will Enable/Disable XP gained while in the current dungeon
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
 
 Solocraft.XP.Enabled = 1
 
-
-# XP Balancing (XP Gain must be Enabled)
-# This settings will decrease the XP gained based on the Difficulty setting of the dungeon
-# and how many players are in the group.
-
-#Default: 1 (Enabled)
-#    	  0 (Disable)
+#
+#    Solocraft.XPBal.Enabled
+#        Description: XP Balancing (XP Gain must be Enabled)
+#                     This settings will decrease the XP gained based on the
+#                     Difficulty setting of the dungeonand how many players are in the group.
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
 
 Solocraft.XPBal.Enabled = 1
 
+#
+#    Solocraft.Dungeon
+#    Solocraft.Heroic
+#    Solocraft.Raid25
+#    Solocraft.Raid40
+#        Description: Default dungeon difficulty multipliers
+#        Default:     5.0  - (Solocraft.Dungeon)
+#                     10.0 - (Solocraft.Heroic)
+#                     25.0 - (Solocraft.Raid25)
+#                     40.0 - (Solocraft.Raid40)
 
-################################################################################################
-#Catch all Bucket - Difficulty Offset Defaults
-################################################################################################
-
-# Difficulty Multipliers
-# Defaults: 5, 10, 25, 40
 Solocraft.Dungeon = 5.0 
-Solocraft.Heroic = 10.0
-Solocraft.Raid25 = 25.0
-Solocraft.Raid40 = 40.0
+Solocraft.Heroic  = 10.0
+Solocraft.Raid25  = 25.0
+Solocraft.Raid40  = 40.0
+
+#
+#    Solocraft.Dungeon.Level
+#        Description: Default dungeon level
+#        Default:     80 - (Enabled)
+
+Solocraft.Dungeon.Level = 80
+
+#
+#    Solocraft.Max.Level.Diff
+#        Description: Max player level difference over the Dungeon's Level for Solocraft
+#                     to apply the difficulty offset buff.
+#        Default:     10 - (Enabled)
+#                     80 - (Any)
+
+Solocraft.Max.Level.Diff = 10
 
 
 ################################################################################################
@@ -284,25 +303,6 @@ Solocraft.HallsOfReflectionH = 5.0
 # The Ruby Sanctum
 Solocraft.ChamberOfAspectsRed = 5.0
 Solocraft.ChamberOfAspectsRedH = 5.0
-
-
-################################################################################################
-#Player Level Thresholds 
-################################################################################################
-
-#Max player level difference over the Dungeon's Level for Solocraft to apply the 
-# difficulty offset buff.
-# Default: 	10
-# Disable: 80
-Solocraft.Max.Level.Diff = 10
-
-
-################################################################################################
-#Dungeon Base Levels
-################################################################################################
-
-#Catch All - Default 80
-Solocraft.Dungeon.Level = 80
 
 
 ################################################################################################

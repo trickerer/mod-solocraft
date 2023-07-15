@@ -2,7 +2,7 @@ name: core-build
 on:
   push:
     branches:
-      - 'master'
+      - 'npcbots_3.3.5'
   pull_request:
 
 jobs:
