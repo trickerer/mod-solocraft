@@ -43,17 +43,21 @@ enum SCSpells
     //SPELL_DAMAGE_PCT_BONUS   = 30147, //"Tamed Pet Passive (DND)", effct_0, effect_1
     SPELL_HEALTH_PCT_BONUS   = 56257, //"Increased Health", effct_0
     SPELL_SPELLPOWER_BONUS   = 47182, //"Copy of Increase Spell Dam 121", effect_0, effect_1
+    SPELL_DEFENSE_BONUS      = 39423, //"QATest +500 Defense (QASpell)", effect 0
+    SPELL_DAMAGETAKEN_BONUS  = 35697, //"Pet Passive (DND)", effect 0
 };
 
-bool SoloCraftEnable          = true;
-bool SoloCraftAnnounceModule  = true;
-bool SolocraftXPBalEnabled    = true;
-bool SolocraftXPEnabled       = true;
-float SoloCraftCritMult       = 1.0f;
-float SoloCraftSpellpowerMult = 1.0f;
-float SoloCraftStatsMult      = 100.0f;
-uint32 SolocraftLevelDiff     = 1;
-uint32 SolocraftDungeonLevel  = 1;
+bool SoloCraftEnable           = true;
+bool SoloCraftAnnounceModule   = true;
+bool SolocraftXPBalEnabled     = true;
+bool SolocraftXPEnabled        = true;
+float SoloCraftCritMult        = 1.0f;
+float SoloCraftDefenseMult     = 1.0f;
+float SoloCraftDamagetakenMult = 1.0f;
+float SoloCraftSpellpowerMult  = 1.0f;
+float SoloCraftStatsMult       = 100.0f;
+uint32 SolocraftLevelDiff      = 1;
+uint32 SolocraftDungeonLevel   = 1;
 
 std::unordered_map<uint8, uint32> classBalanceMap;
 std::unordered_map<uint32, uint32> dungeonLevelMap;
@@ -69,11 +73,13 @@ float DifficultyDefault649H25 = 1.0f;
 
 struct SolocraftPlayer
 {
-    SolocraftPlayer() : difficulty(0.0f), spellpower_bonus(0), crit_bonus(0), stats_mult(0.0f), xp_mult(1.0f) {}
+    SolocraftPlayer() : difficulty(0.0f), spellpower_bonus(0), crit_bonus(0), defense_bonus(0), dmgtaken_bonus(0), stats_mult(0.0f), xp_mult(1.0f) {}
 
     float difficulty;
     int32 spellpower_bonus;
     int32 crit_bonus;
+    int32 defense_bonus;
+    int32 dmgtaken_bonus;
     float stats_mult;
     float xp_mult;
 };
@@ -559,19 +565,29 @@ private:
         }
         if (Aura* craura = EnsureAura(unit, SPELL_CRIT_PCT_BONUS))
         {
-            int32 critBonus = std::min<int32>(100, int32(SoloCraftCritMult * scp.stats_mult * 0.1f));
+            scp.crit_bonus = std::min<int32>(100, int32(SoloCraftCritMult * scp.stats_mult * 0.1f));
             for (uint8 eff_index = EFFECT_0; eff_index <= EFFECT_1; ++eff_index)
                 if (AuraEffect* crit = craura->GetEffect(eff_index))
-                    crit->ChangeAmount(critBonus);
-            scp.crit_bonus = critBonus;
+                    crit->ChangeAmount(scp.crit_bonus);
+        }
+        if (Aura* defaura = EnsureAura(unit, SPELL_DEFENSE_BONUS))
+        {
+            scp.defense_bonus = std::min<int32>(1000, std::max<int32>(0, int32(SoloCraftDefenseMult * scp.stats_mult)));
+            if (AuraEffect* def = defaura->GetEffect(EFFECT_0))
+                def->ChangeAmount(scp.defense_bonus);
+        }
+        if (Aura* dtaura = EnsureAura(unit, SPELL_DAMAGETAKEN_BONUS))
+        {
+            scp.dmgtaken_bonus = std::min<int32>(90, std::max<int32>(0, int32(SoloCraftDamagetakenMult * scp.stats_mult * 0.1f)));
+            if (AuraEffect* dat = dtaura->GetEffect(EFFECT_0))
+                dat->ChangeAmount(-scp.dmgtaken_bonus);
         }
         if (Aura* spaura = EnsureAura(unit, SPELL_SPELLPOWER_BONUS))
         {
-            int32 spellpowerBonus = std::max<int32>(0, int32(unit->GetLevel() * SoloCraftSpellpowerMult * scp.stats_mult * 0.01f));
+            scp.spellpower_bonus = std::max<int32>(0, int32(unit->GetLevel() * SoloCraftSpellpowerMult * scp.stats_mult * 0.01f));
             for (uint8 eff_index = EFFECT_0; eff_index <= EFFECT_1; ++eff_index)
                 if (AuraEffect* spp = spaura->GetEffect(eff_index))
-                    spp->ChangeAmount(spellpowerBonus);
-            scp.spellpower_bonus = spellpowerBonus;
+                    spp->ChangeAmount(scp.spellpower_bonus);
         }
         // Restore HP / Mana
         unit->SetFullHealth();
@@ -596,8 +612,9 @@ private:
         //        ApplyVehicleBuffs(veh->GetBase()->ToCreature(), scp);
 
         ss << "|cffFF0000[SoloCraft] |cffFF8000" << unit->GetName() << (unit->IsNPCBot() ? " (bot)" : "") << " updates " << map->GetMapName()
-            << " - Difficulty Offset: " << difficulty << ". Crit Bonus: " << scp.crit_bonus
-            << "%. Spellpower Bonus: " << scp.spellpower_bonus << ". Class Balance Weight: " << classBalance << ". "
+            << " - Difficulty Offset: " << difficulty << ". Crit Bonus: " << scp.crit_bonus << "%. Defense Bonus: " << scp.defense_bonus
+            << ". Damage Taken Bonus: " << (-scp.dmgtaken_bonus) << "%. Spellpower Bonus: " << scp.spellpower_bonus
+            << ". Class Balance Weight: " << classBalance << ". "
             << (SolocraftXPEnabled ? SolocraftXPEnabled ? "XP Balancing: |cff4CFF00Enabled" : "XP Balancing: |cffFF0000Disabled" : "XP Gain: |cffFF0000Disabled");
         ReportToSelf(unit, ss.str());
         //ReportToGroup(unit, members, ss.str());
@@ -618,15 +635,17 @@ private:
                 unit->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + stat), TOTAL_PCT, scp.stats_mult, false);
         }
         EnsureUnAura(unit, SPELL_CRIT_PCT_BONUS);
+        EnsureUnAura(unit, SPELL_DEFENSE_BONUS);
+        EnsureUnAura(unit, SPELL_DAMAGETAKEN_BONUS);
         EnsureUnAura(unit, SPELL_SPELLPOWER_BONUS);
 
         if (Player* player = unit->ToPlayer())
             if (Pet* pet = player->GetPet())
                 ClearPetBuffs(pet);
 
-        if (Vehicle* veh = unit->GetVehicle())
-            if (!veh->GetBase()->IsPlayer())
-                ClearVehicleBuffs(veh->GetBase()->ToCreature());
+        //if (Vehicle* veh = unit->GetVehicle())
+        //    if (!veh->GetBase()->IsPlayer())
+        //        ClearVehicleBuffs(veh->GetBase()->ToCreature());
 
         std::ostringstream ss;
         ss.setf(std::ios_base::fixed);
@@ -634,8 +653,9 @@ private:
 
         ss << "|cffFF0000[SoloCraft] |cffFF8000" << unit->GetName() << (is_bot ? " (bot)" : "")
             << (max_players_reached ? is_bot ? " resets " : " resets in " : is_bot ? " exited from " : " exited to ") << map->GetMapName()
-            << " - Reverting Difficulty Offset: " << scp.difficulty << ". Crit Bonus Removed: " << scp.crit_bonus
-            << "%. Spellpower Bonus Removed: " << scp.spellpower_bonus;
+            << " - Reverting Difficulty Offset: " << scp.difficulty
+            << ". Crit Bonus Removed: " << scp.crit_bonus << "%. Defense Bonus Removed: " << scp.defense_bonus
+            << ". Damage Taken Bonus Removed: " << (-scp.dmgtaken_bonus) << "%. Spellpower Bonus Removed: " << scp.spellpower_bonus;
         ReportToSelf(unit, ss.str());
         //ReportToGroup(unit, members, ss.str());
     }
@@ -645,12 +665,16 @@ private:
         if (Aura* hpaura = EnsureAura(creature, SPELL_HEALTH_PCT_BONUS))
             if (AuraEffect* hpeff = hpaura->GetEffect(EFFECT_0))
                 hpeff->ChangeAmount(int32(scp.stats_mult));
+        if (Aura* dtaura = EnsureAura(creature, SPELL_DAMAGETAKEN_BONUS))
+            if (AuraEffect* dat = dtaura->GetEffect(EFFECT_0))
+                dat->ChangeAmount(-scp.dmgtaken_bonus);
         creature->m_Events.AddEventAtOffset([me = creature]() { me->SetFullHealth(); }, 100ms);
     }
 
     static void ClearCommonSecondaryBuffs(Creature* creature)
     {
         EnsureUnAura(creature, SPELL_HEALTH_PCT_BONUS);
+        EnsureUnAura(creature, SPELL_DAMAGETAKEN_BONUS);
     }
 
     static void ApplyPetBuffs(Creature* creature, SolocraftPlayer const& scp)
@@ -802,22 +826,24 @@ public:
     // Load Configuration Settings
     void SetInitialWorldSettings()
     {
-        SoloCraftEnable         = sConfigMgr->GetOption<bool>("Solocraft.Enable", true);
-        SoloCraftAnnounceModule = sConfigMgr->GetOption<bool>("Solocraft.Announce", true);
+        SoloCraftEnable          = sConfigMgr->GetOption<bool>("Solocraft.Enable", true);
+        SoloCraftAnnounceModule  = sConfigMgr->GetOption<bool>("Solocraft.Announce", true);
 
         // Balancing
-        SoloCraftCritMult       = sConfigMgr->GetOption<float>("SoloCraft.Crit.Mult", 0.5f);
-        SoloCraftSpellpowerMult = sConfigMgr->GetOption<float>("SoloCraft.Spellpower.Mult", 2.5f);
-        SoloCraftStatsMult      = sConfigMgr->GetOption<float>("SoloCraft.Stats.Mult", 100.0f);
+        SoloCraftCritMult        = sConfigMgr->GetOption<float>("SoloCraft.Crit.Mult", 0.5f);
+        SoloCraftDefenseMult     = sConfigMgr->GetOption<float>("SoloCraft.Defense.Mult", 1.0f);
+        SoloCraftDamagetakenMult = sConfigMgr->GetOption<float>("SoloCraft.Damagetaken.Mult", 1.0f);
+        SoloCraftSpellpowerMult  = sConfigMgr->GetOption<float>("SoloCraft.Spellpower.Mult", 2.5f);
+        SoloCraftStatsMult       = sConfigMgr->GetOption<float>("SoloCraft.Stats.Mult", 100.0f);
 
         // XP Enabled
-        SolocraftXPEnabled      = sConfigMgr->GetOption<bool>("Solocraft.XP.Enabled", true);
+        SolocraftXPEnabled       = sConfigMgr->GetOption<bool>("Solocraft.XP.Enabled", true);
         // XP Balancing
-        SolocraftXPBalEnabled   = sConfigMgr->GetOption<bool>("Solocraft.XPBal.Enabled", true);
+        SolocraftXPBalEnabled    = sConfigMgr->GetOption<bool>("Solocraft.XPBal.Enabled", true);
         // Level Thresholds
-        SolocraftLevelDiff      = sConfigMgr->GetOption<uint32>("Solocraft.Max.Level.Diff", 10);
+        SolocraftLevelDiff       = sConfigMgr->GetOption<uint32>("Solocraft.Max.Level.Diff", 10);
         // Default Dungeon Level
-        SolocraftDungeonLevel   = sConfigMgr->GetOption<uint32>("Solocraft.Dungeon.Level", 80);
+        SolocraftDungeonLevel    = sConfigMgr->GetOption<uint32>("Solocraft.Dungeon.Level", 80);
 
         classBalanceMap =
         {

@@ -22,7 +22,6 @@ Solocraft.Announce = 1
 #
 #    SoloCraft.Crit.Mult
 #        Description: Crit Bonus Multiplier
-#                     Spellcasters spellpower bonus multiplier to offset no spellpower received from stats
 #                     Formula: (multiplier * stats_mult / 10)
 #                     Example Player with default modifier and dungeon difficulty of 5
 #                     will receive a base Crit chance increase of 25%.
@@ -31,6 +30,30 @@ Solocraft.Announce = 1
 #
 
 SoloCraft.Crit.Mult = 0.5
+
+#
+#    SoloCraft.Defense.Mult
+#        Description: Defense Bonus Multiplier
+#                     Formula: min(1000, (multiplier * stats_mult))
+#                     Example Player with default modifier and dungeon difficulty of 5
+#                     will receive Defense skill bonus of 500 (+20% dodge/parry/block).
+#        Default:     1.0 - (Enabled)
+#                     0   - (Disabled)
+#
+
+SoloCraft.Defense.Mult = 1.0
+
+#
+#    SoloCraft.Damagetaken.Mult
+#        Description: Damage Taken Reduction Bonus Multiplier
+#                     Formula: min(90, (multiplier * stats_mult / 10))
+#                     Example Player with default modifier and dungeon difficulty of 5
+#                     will receive Damage Reduction bonus of 50%.
+#        Default:     1.0 - (Enabled)
+#                     0   - (Disabled)
+#
+
+SoloCraft.Damagetaken.Mult = 1.0
 
 #
 #    SoloCraft.Spellpower.Mult
