@@ -516,7 +516,9 @@ private:
         uint32 numInGroup = members.size();
 
         // Check whether to buff the player or check to debuff back to normal
-        bool max_players_or_more = numInGroup >= map->GetEntry()->maxPlayers;
+        InstanceMap const* instanceMap = map->ToInstanceMap();
+        uint32 maxPlayers = instanceMap ? instanceMap->GetMaxPlayers() : map->GetEntry()->maxPlayers;
+        bool max_players_or_more = numInGroup >= maxPlayers;
         if (max_players_or_more || difficulty == 0.0f || (unit->IsPlayer() && unit->ToPlayer()->GetSession()->PlayerLogout()))
         {
             ClearBuffs(unit, map, class_, max_players_or_more);
