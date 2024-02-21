@@ -161,6 +161,9 @@ public:
 
     static void OnGiveXP(Player* player, uint32& amount)
     {
+        if (!SoloCraftEnable)
+            return;
+
         auto cit = scPlayers.find(player->GetGUID());
         if (cit != scPlayers.cend())
             amount = std::decay_t<decltype(amount)>(amount * cit->second.xp_mult);
@@ -183,6 +186,9 @@ public:
 
     static void OnPetAddToWorld(Creature* creature)
     {
+        if (!SoloCraftEnable)
+            return;
+
         auto cit = scPlayers.find(creature->GetCreatorGUID());
         if (cit != scPlayers.cend())
             ApplyPetBuffs(creature, cit->second);
@@ -190,6 +196,9 @@ public:
 
     static void OnAfterPetInitStats(Player const* player, Guardian* guardian)
     {
+        if (!SoloCraftEnable)
+            return;
+
         auto cit = scPlayers.find(player->GetGUID());
         if (cit != scPlayers.cend())
             ApplyPetBuffs(guardian, cit->second);
@@ -264,10 +273,8 @@ public:
     //{
     //    if (!SoloCraftEnable)
     //        return;
-
     //    if (scPlayers.find(creature->GetOwnerGUID()) == scPlayers.cend())
     //        return;
-
     //    if (Unit const* creator = creature->GetCreator())
     //        if (creator->IsPlayer())
     //            if (Creature const* bot = creator->ToPlayer()->GetBotMgr()->GetBot(creature->GetOwnerGUID()))
@@ -288,17 +295,13 @@ public:
     //{
     //    if (!SoloCraftEnable)
     //        return;
-
     //    if (vehicle->GetBase()->IsPlayer())
     //        return;
-
     //    if (dungeonLevelMap.find(vehicle->GetBase()->GetMap()->GetId()) == dungeonLevelMap.cend())
     //        return;
-
     //    auto cit = scPlayers.find(passenger->GetGUID());
     //    if (cit == scPlayers.cend())
     //        return;
-
     //    if (VehicleSeatEntry const* seat = vehicle->GetSeatForPassenger(passenger))
     //        if (seat->m_flags & VEHICLE_SEAT_FLAG_CAN_CONTROL)
     //            ApplyVehicleBuffs(vehicle->GetBase()->ToCreature(), cit->second);
@@ -308,16 +311,12 @@ public:
     //{
     //    if (!SoloCraftEnable)
     //        return;
-
     //    if (vehicle->GetBase()->IsPlayer())
     //        return;
-
     //    if (dungeonLevelMap.find(vehicle->GetBase()->GetMap()->GetId()) == dungeonLevelMap.cend())
     //        return;
-
     //    if (scPlayers.find(passenger->GetGUID()) == scPlayers.cend())
     //        return;
-
     //    if (VehicleSeatEntry const* seat = vehicle->GetSeatForPassenger(passenger))
     //    {
     //        if (seat->m_flags & VEHICLE_SEAT_FLAG_CAN_CONTROL)
@@ -519,7 +518,7 @@ private:
         InstanceMap const* instanceMap = map->ToInstanceMap();
         uint32 maxPlayers = instanceMap ? instanceMap->GetMaxPlayers() : map->GetEntry()->maxPlayers;
         bool max_players_or_more = numInGroup >= maxPlayers;
-        if (max_players_or_more || difficulty == 0.0f || (unit->IsPlayer() && unit->ToPlayer()->GetSession()->PlayerLogout()))
+        if (!SoloCraftEnable || max_players_or_more || difficulty == 0.0f || (unit->IsPlayer() && unit->ToPlayer()->GetSession()->PlayerLogout()))
         {
             ClearBuffs(unit, map, class_, max_players_or_more);
             return;
@@ -649,17 +648,20 @@ private:
         //    if (!veh->GetBase()->IsPlayer())
         //        ClearVehicleBuffs(veh->GetBase()->ToCreature());
 
-        std::ostringstream ss;
-        ss.setf(std::ios_base::fixed);
-        ss.precision(2);
+        if (SoloCraftEnable)
+        {
+            std::ostringstream ss;
+            ss.setf(std::ios_base::fixed);
+            ss.precision(2);
 
-        ss << "|cffFF0000[SoloCraft] |cffFF8000" << unit->GetName() << (is_bot ? " (bot)" : "")
-            << (max_players_reached ? is_bot ? " resets " : " resets in " : is_bot ? " exited from " : " exited to ") << map->GetMapName()
-            << " - Reverting Difficulty Offset: " << scp.difficulty
-            << ". Crit Bonus Removed: " << scp.crit_bonus << "%. Defense Bonus Removed: " << scp.defense_bonus
-            << ". Damage Taken Bonus Removed: " << (-scp.dmgtaken_bonus) << "%. Spellpower Bonus Removed: " << scp.spellpower_bonus;
-        ReportToSelf(unit, ss.str());
-        //ReportToGroup(unit, members, ss.str());
+            ss << "|cffFF0000[SoloCraft] |cffFF8000" << unit->GetName() << (is_bot ? " (bot)" : "")
+                << (max_players_reached ? is_bot ? " resets " : " resets in " : is_bot ? " exited from " : " exited to ") << map->GetMapName()
+                << " - Reverting Difficulty Offset: " << scp.difficulty
+                << ". Crit Bonus Removed: " << scp.crit_bonus << "%. Defense Bonus Removed: " << scp.defense_bonus
+                << ". Damage Taken Bonus Removed: " << (-scp.dmgtaken_bonus) << "%. Spellpower Bonus Removed: " << scp.spellpower_bonus;
+            ReportToSelf(unit, ss.str());
+            //ReportToGroup(unit, members, ss.str());
+        }
     }
 
     static void ApplyCommonSecondaryBuffs(Creature* creature, SolocraftPlayer const& scp)
